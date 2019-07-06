@@ -8,7 +8,7 @@ import random
 
 def request_new_rightmove():
     print("requesting new rightmove data")
-    url = "https://www.rightmove.co.uk/property-to-rent/find.html?locationIdentifier=STATION%5E3317&maxBedrooms=5&minBedrooms=4&maxPrice=5000&radius=3.0&propertyTypes=&includeLetAgreed=false&mustHave=&dontShow=&furnishTypes=&keywords="
+    url = "https://www.rightmove.co.uk/property-to-rent/find.html?locationIdentifier=STATION%5E3317&maxBedrooms=5&minBedrooms=4&maxPrice=5000&radius=5.0&propertyTypes=&includeLetAgreed=false&mustHave=&dontShow=&furnishTypes=&keywords="
     search_results = rightmove_data(url).get_results
     search_results = search_results.T.to_dict().values()
     print("got", len(search_results), "results")
