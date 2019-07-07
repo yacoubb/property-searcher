@@ -16,11 +16,15 @@ def get_new_directions(res):
     request_string = (
         "https://api.tfl.gov.uk/Journey/JourneyResults/"
         + res["address"].replace(" ", "%20").replace(",", "%2C")
-        + "/to/Gower%20Street?nationalSearch=false&journeyPreference=LeastTime&app_key=a6f6f11944e68b4c571b358fe9a8bffa&app_id=187f5018"
+        + "/to/Goodge%20Street%2C%20Torrington%20Place?nationalSearch=false&journeyPreference=LeastTime&app_key=a6f6f11944e68b4c571b358fe9a8bffa&app_id=187f5018"
     )
 
     response = requests.get(url=request_string)
-    return response.json()
+    try:
+        return response.json()
+    except json.JSONDecodeError as err:
+        print(err)
+        return {"status": "fail"}
 
 
 def convert_direction_json_to_routes(directions):
@@ -62,6 +66,13 @@ def download_and_save_directions():
     file_paths = []
     with open("property_index.json", "r") as index_file:
         file_paths = json.load(index_file)
+    for path in file_paths:
+        if os.path.exists(path + "/directions.json"):
+            os.remove(path + "/directions.json")
+        i = 0
+        while os.path.exists(path + "/route_" + str(i) + ".json"):
+            os.remove(path + "/route_" + str(i) + ".json")
+            i += 1
     print("getting directions for", len(file_paths), "properties")
     split_file_paths = list(divide_chunks(file_paths, 450))
     for i in range(len(split_file_paths)):
@@ -91,11 +102,11 @@ def check_all_properties_have_directions():
         with open(path + "/directions.json", "r") as dir_file:
             directions = json.load(dir_file)
             if not "journeys" in directions:
-                print(path + "/directions.json")
+                # print(path + "/directions.json")
                 disambugations.append(path)
-    print(len(disambugations))
+    print("got", len(disambugations), "disambugations")
 
 
 if __name__ == "__main__":
-    # download_and_save_directions()
+    download_and_save_directions()
     check_all_properties_have_directions()
