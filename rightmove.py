@@ -2,8 +2,6 @@ import json
 import sys
 import os
 
-app_id = "187f5018"
-app_key = "a6f6f11944e68b4c571b358fe9a8bffa"
 max_duration = 40
 max_walk_duration = 40
 
@@ -22,13 +20,13 @@ def check_routes(routes):
         # if any of the walk components are longer than max walk duration
         good_route = True
         for leg in routes[i]["legs"]:
-            if leg[0] == "walk" and leg[2] > max_walk_duration:
+            if leg["type"] == "walk" and leg["duration"] > max_walk_duration:
                 good_route = False
         if not good_route:
             continue
 
         # if we have to take a tube and a bus or vice versa
-        if len(list(filter(lambda x: x[1] != "walk", routes[i]["legs"]))) < 2:
+        if len(list(filter(lambda x: x["type"] != "walk", routes[i]["legs"]))) > 1:
             continue
 
         valid_routes.append(routes[i])
