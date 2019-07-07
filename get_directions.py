@@ -12,6 +12,14 @@ def divide_chunks(l, n):
         yield l[i : i + n]
 
 
+app_key = ""
+app_id = ""
+with open("tfl_credentials.json", "r") as cred_file:
+    creds = json.load(cred_file)
+    app_key = creds["app_key"]
+    app_id = creds["app_id"]
+
+
 def get_new_directions(res):
     torrington_place_id = "1013720"
     request_string = (
@@ -19,7 +27,10 @@ def get_new_directions(res):
         + res["address"].replace(" ", "%20").replace(",", "%2C")
         + "/to/"
         + torrington_place_id
-        + "?nationalSearch=false&journeyPreference=LeastTime&app_key=a6f6f11944e68b4c571b358fe9a8bffa&app_id=187f5018"
+        + "?nationalSearch=false&journeyPreference=LeastTime&app_key="
+        + app_key
+        + "&app_id="
+        + app_id
     )
 
     response = requests.get(url=request_string)
