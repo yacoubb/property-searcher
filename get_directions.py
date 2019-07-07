@@ -56,7 +56,7 @@ def convert_direction_json_to_routes(directions):
                 bus_num = summary.split(" bus ")[0]
                 legs.append(
                     {
-                        "type": "tube",
+                        "type": "bus",
                         "dest": dest,
                         "duration": leg["duration"],
                         "line": bus_num,
