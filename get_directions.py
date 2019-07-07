@@ -13,10 +13,13 @@ def divide_chunks(l, n):
 
 
 def get_new_directions(res):
+    torrington_place_id = "1013720"
     request_string = (
         "https://api.tfl.gov.uk/Journey/JourneyResults/"
         + res["address"].replace(" ", "%20").replace(",", "%2C")
-        + "/to/Goodge%20Street%2C%20Torrington%20Place?nationalSearch=false&journeyPreference=LeastTime&app_key=a6f6f11944e68b4c571b358fe9a8bffa&app_id=187f5018"
+        + "/to/"
+        + torrington_place_id
+        + "?nationalSearch=false&journeyPreference=LeastTime&app_key=a6f6f11944e68b4c571b358fe9a8bffa&app_id=187f5018"
     )
 
     response = requests.get(url=request_string)
@@ -35,18 +38,58 @@ def convert_direction_json_to_routes(directions):
         route = {}
         legs = []
         for leg in journey["legs"]:
-            dest = leg["instruction"]["summary"].split(" to ")[-1]
-            if "Walk " in leg["instruction"]["summary"]:
-                legs.append(("walk", dest, leg["duration"]))
-            elif " line " in leg["instruction"]["summary"]:
-                line = leg["instruction"]["summary"].split(" to ")[0]
-                legs.append(("tube", line, dest, leg["duration"]))
+            summary = leg["instruction"]["summary"]
+            dest = summary.split(" to ")[-1]
+            if "Walk " in summary:
+                legs.append({"type": "walk", "dest": dest, "duration": leg["duration"]})
+            elif " line " in summary:
+                line = summary.split(" to ")[0]
+                legs.append(
+                    {
+                        "type": "tube",
+                        "dest": dest,
+                        "duration": leg["duration"],
+                        "line": line,
+                    }
+                )
             else:
-                # TODO get bus number
-                legs.append(("bus", dest, leg["duration"]))
+                bus_num = summary.split(" bus ")[0]
+                legs.append(
+                    {
+                        "type": "tube",
+                        "dest": dest,
+                        "duration": leg["duration"],
+                        "line": bus_num,
+                    }
+                )
         route["legs"] = legs
-        route["total_duration"] = sum(map(lambda x: x[-1], legs))
-        routes.append(route)
+        route["total_duration"] = sum(map(lambda x: x["duration"], legs))
+        already_exists = False
+        for other_route in routes:
+            if len(other_route["legs"]) == len(route["legs"]):
+                match = True
+                for i in range(route["legs"]):
+                    match = (
+                        match
+                        and route["legs"][i]["type"] == other_route["legs"][i]["type"]
+                    )
+                    if match:
+                        match = (
+                            match
+                            and route["legs"][i]["dest"]
+                            == other_route["legs"][i]["dest"]
+                        )
+                        if route["type"] != "walk":
+                            match = (
+                                match
+                                and route["legs"][i]["line"]
+                                == other_route["legs"][i]["line"]
+                            )
+                if match:
+                    already_exists = True
+                    break
+        if not already_exists:
+            routes.append(route)
     return routes
 
 
