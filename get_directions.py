@@ -68,7 +68,7 @@ def convert_direction_json_to_routes(directions):
         for other_route in routes:
             if len(other_route["legs"]) == len(route["legs"]):
                 match = True
-                for i in range(route["legs"]):
+                for i in range(len(route["legs"])):
                     match = (
                         match
                         and route["legs"][i]["type"] == other_route["legs"][i]["type"]
@@ -79,7 +79,7 @@ def convert_direction_json_to_routes(directions):
                             and route["legs"][i]["dest"]
                             == other_route["legs"][i]["dest"]
                         )
-                        if route["type"] != "walk":
+                        if route["legs"][i]["type"] != "walk":
                             match = (
                                 match
                                 and route["legs"][i]["line"]
