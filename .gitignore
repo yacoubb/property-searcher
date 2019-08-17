@@ -1,7 +1,7 @@
 results
 property_index.json
 good_properties.json
-tfl_credentials.json
+credentials.json
 .vscode
 
 # Byte-compiled / optimized / DLL files

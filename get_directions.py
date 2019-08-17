@@ -14,10 +14,10 @@ def divide_chunks(l, n):
 
 app_key = ""
 app_id = ""
-with open("tfl_credentials.json", "r") as cred_file:
+with open("credentials.json", "r") as cred_file:
     creds = json.load(cred_file)
-    app_key = creds["app_key"]
-    app_id = creds["app_id"]
+    app_key = creds["tfl_app_key"]
+    app_id = creds["tfl_app_id"]
 
 
 def get_new_directions(res):
