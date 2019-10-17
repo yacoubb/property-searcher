@@ -6,9 +6,19 @@ import os
 import random
 
 
+locations = json.load(open("./location_index.json"))
+
+
 def request_new_rightmove():
     print("requesting new rightmove data")
-    url = "https://www.rightmove.co.uk/property-to-rent/find.html?locationIdentifier=STATION%5E3317&maxBedrooms=5&minBedrooms=4&maxPrice=5000&radius=3.0&propertyTypes=&includeLetAgreed=false&mustHave=&dontShow=&furnishTypes=&keywords="
+    criteria = json.load(open("./search_criteria.json", "r"))
+    print(
+        f"getting properties with {criteria['max_bedrooms']} bedrooms with monthly price range of £{criteria['min_price']} - £{criteria['max_price']} within {criteria['mile_radius']} miles of {criteria['location']}"
+    )
+    print(
+        f"weekly price range is £{int(criteria['min_price'] * 7 / 31)} - £{int(criteria['max_price'] * 7 / 31)}"
+    )
+    url = f"https://www.rightmove.co.uk/property-to-rent/find.html?locationIdentifier={locations[criteria['location']]}&maxBedrooms={criteria['max_bedrooms']}&minBedrooms={criteria['min_bedrooms']}&minPrice={criteria['min_price']}&maxPrice={criteria['max_price']}&radius={criteria['mile_radius']}&propertyTypes=&includeLetAgreed=false&mustHave=&dontShow=&furnishTypes=&keywords="
     search_results = rightmove_data(url).get_results
     search_results = search_results.T.to_dict().values()
     print("got", len(search_results), "results")
@@ -37,6 +47,8 @@ def request_new_rightmove():
             property_file.write(json.dumps(res, indent=4))
         res["filepath"] = os.path.abspath("results/" + res["id"])
         parsed.append(res["filepath"])
+
+    print(f"saving {len(parsed)} properties")
 
     with open("property_index.json", "w+") as index:
         index.write(json.dumps(parsed, indent=4))

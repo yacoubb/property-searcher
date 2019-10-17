@@ -2,8 +2,9 @@ import json
 import sys
 import os
 
-max_duration = 60
-max_walk_duration = 40
+criteria = json.load(open("./search_criteria.json", "r"))
+max_duration = criteria["max_duration"]
+max_walk_duration = criteria["max_walk_duration"]
 
 
 def check_routes(routes):
@@ -55,7 +56,7 @@ if __name__ == "__main__":
     properties = load_properties()
     properties = list(filter(lambda x: len(check_routes(x[1])) > 0, properties))
     properties = list(filter(lambda x: x[0]["weekly_price_per_head"] < 180, properties))
-    parsed = {4: [], 5: []}
+    parsed = {}
     for prop, routes, path in properties:
         routes = check_routes(routes)
         if not int(prop["number_bedrooms"]) in parsed:

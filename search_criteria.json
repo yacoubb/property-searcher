@@ -1,0 +1,10 @@
+{
+	"min_bedrooms": 4,
+	"max_bedrooms": 4,
+	"min_price": 2800,
+	"max_price": 3300,
+	"mile_radius": "10.0",
+	"location": "Euston Square Station",
+	"max_duration": 40,
+	"max_walk_duration": 40
+}
